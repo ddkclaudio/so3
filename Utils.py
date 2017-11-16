@@ -1,11 +1,11 @@
 from MMU import *
 
 # Base para Best/Worst Fit
-def lista_processos (memory):
-    aux = Memory(0, memory, -1)
+def lista_processos (qtd_memory):
+    aux = Memory(0, qtd_memory)
     return [aux]
 
-def best_fit (lista, procc):
+def best_fit(lista, procc):
     aux = Memory(0, 0)
     for mem in lista:
         # espaco livre
@@ -27,31 +27,55 @@ def worst_fit(lista, procc):
     return aux
 
 # Base para Quick Fit
-# @recebe a unidade de alocacao e o tamanho da memoria fisica 
-# @devolve uma lista de listas com todos os espacos disponiveis    
-def get_spaces (ua, tamanho):
-    lista = []
-    i = 1
-    while i*ua < tamanho:
-        aux = []
-        size = i*ua
-        base = 0
-        limit = size
-        while limit < tamanho:
-            mem = Memory(base, size)
-            base += size
-            limit += size
-            aux += [mem]
-        lista += aux
-    return lista
+# @recebe uma lista com os tamanhos e a lista com as memorias
+# @devolve uma lista de listas com todos os espacos disponiveis
+def get_spaces(ua, tamanho):
+    pass
 
 # recebe a lista de listas e o tamanho do processo
 # devolve
-def quick_fit (lista, procc, ua):
-    ind = 0
-    while ind*ua < procc.mem:
-        ind += 1
-    for mm in lista[ind]:
-        if mm.process == None:
-            mm.process = procc
-            break
+def quick_fit(lista, procc, ua):
+    pass
+
+# n estamos levando em conta a possubilidade de dar ruim na escolha de onde por os processos
+def into_memory (procc, option, list_memory):
+    if option == Memory.BEST:
+        best_local  = best_fit(list_memory, procc)
+        index       = list_memory.index(best_local)
+        if procc.mem < list_memory[index].space:
+            list_memory.insert(index, Memory(0, procc.mem, procc))
+            list_memory[index + 1].base += procc.mem
+            list_memory[index + 1].space -= procc.mem
+        else:
+            list_memory[index].pr += procc
+    elif option == Memory.WORST:
+        best_local  = worst_fit(list_memory, procc)
+        index       = list_memory.index(best_local)
+        if procc.mem < list_memory[index].space:
+            list_memory.insert(index, Memory(0, procc.mem, procc))
+            list_memory[index + 1].base += procc.mem
+            list_memory[index + 1].space -= procc.mem
+        else:
+            list_memory[index].pr += procc
+        pass
+    elif option == Memory.QUICK:
+        pass
+    else:
+        print("Error: into_memory invalid option")
+
+def out_of_memory (proc):
+    pass
+
+# Inserir
+# [   [free, 0, 32]   ]
+
+# [  [proc0, 0, 8], [free, 0, 32] ]
+
+# [  [proc0, 0, 8], [free, 8, 24] ]
+
+# Remover
+# [ [free, 0, 18], [proc1, 18, 6], [proc2, 24, 8] ]
+
+# [ [free, 0, 18], [free, 18, 6], [proc2, 24, 8] ]
+
+# [ [free, 0, 24], [proc2, 24, 8] ]

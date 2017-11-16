@@ -1,12 +1,14 @@
 class Process:
-    identifier = 0
+    count = 0
 
     def __init__(self, nome, ti, tf, mem, acc):
-        self.id = Process.identifier
-        Process.identifier += 1
+        self.id = Process.count
+        Process.count += 1
         self.nome = nome
-        self.ti = ti
-        self.tf = tf
-        self.mem = mem
+        self.ti = int(ti)
+        self.tf = int(tf)
+        self.mem = int(mem)
         self.acc = acc #lista de acessos
 
+    def __lt__(self, other):
+        return self.ti < other.ti
