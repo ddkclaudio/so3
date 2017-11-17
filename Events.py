@@ -1,11 +1,12 @@
 class Events:
-    ACCESS = 0
-    DELETE = 1
+    DELETE = 0
+    COMPACT = 1
     INSERT = 2
+    ACCESS = 3
 
     def __init__(self, kind, moment, proc, acc=None):
-        self.kind = kind
-        self.moment = moment
+        self.kind = int(kind)
+        self.moment = int(moment)
         self.proc = proc
         self.acc = acc
 

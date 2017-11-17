@@ -1,9 +1,22 @@
 from MMU import *
+from Events import *
 
 # Base para Best/Worst Fit
 def lista_processos (qtd_memory):
     aux = Memory(0, qtd_memory)
     return [aux]
+
+def compact (memory, m_list):
+    new_one = []
+    basis = 0
+    for mm in m_list:
+        if mm.process:
+            aux = Memory(basis, mm.space, mm.process)
+            basis += mm.space
+            new_one.append(aux)
+    if new_one[-1].space + new_one[-1].base != memory:
+        new_one.append(Memory(basis, memory - basis))
+    return new_one
 
 def best_fit(lista, procc):
     aux = Memory(0, 0)
@@ -97,8 +110,9 @@ def into_memory (procc, option, list_memory, spaces_list):
         else:
             # step 1 -- where to put it
             index = 0
+            tam = len(list_memory)
             done = False
-            while list_memory[index + 1] != None and not done:
+            while index + 1 < tam and not done:
                 if list_memory[index].process:
                     continue
                 elif list_memory[index].base == best_local.base:
@@ -130,18 +144,35 @@ def into_memory (procc, option, list_memory, spaces_list):
 
 def out_of_memory (proc,m_list):
     i = 0
+    tam = len(m_list)
     found = False
-    while m_list[i] and not found:
+    while i < tam and not found:
         if m_list[i].process and m_list[i].process == proc:
             found = True
             m_list[i].process = None
             if m_list[i + 1] and not m_list[i + 1].process:
-                m_list[i].space += m_list[i + 1].spaces
+                m_list[i].space += m_list[i + 1].space
                 m_list.pop(i+1)
             if m_list[i - 1] and not m_list[i - 1].process:
-                m_list[i - 1].space += m_list[i].spaces
+                m_list[i - 1].space += m_list[i].space
                 m_list.pop(i)
         i += 1
+
+def make_it_happen (event, opp, memory, t_space, spaces_list = None):
+    if event.kind == Events.DELETE:
+        print("\tRemoving process " + event.proc.nome)
+        out_of_memory(event.proc, memory)
+    elif event.kind == Events.COMPACT:
+        print("\tCompacting Memory")
+        compact(t_space, memory)
+    elif event.kind == Events.INSERT:
+        print("\tInserting process " + event.proc.nome)
+        into_memory(event.proc, opp[0], memory, spaces_list)
+    elif event.kind == Events.ACCESS:
+        print("\tAccessing space " + event.acc.space + " on process " + event.acc.proc.nome)
+
+
+
 
 # Inserir
 # [   [free, 0, 32]   ]

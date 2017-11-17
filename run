@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 clear
-python main.py $1 $2
+python main.py $1 $2 $3

@@ -8,8 +8,8 @@ class Memory:
 
     '''TRUE => espaco livre'''
     def __init__(self, base, space, pr = None):
-        self.base       = base
-        self.space      = space
+        self.base       = int(base)
+        self.space      = int(space)
         self.process    = pr
         self.id         = Memory.count
         Memory.count    += 1
