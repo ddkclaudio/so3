@@ -13,3 +13,6 @@ class Memory:
         self.process    = pr
         self.id         = Memory.count
         Memory.count    += 1
+
+    def __lt__(self, other):
+        return self.base < other.base
