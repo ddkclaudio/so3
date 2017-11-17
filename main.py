@@ -3,6 +3,7 @@ import re
 from MMU import *
 from Proc import *
 from Utils import *
+from Events import *
 
 # LE O ARQUIVO DE ENTRADA
 with open(sys.argv[1]) as f:

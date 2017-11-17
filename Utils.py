@@ -47,23 +47,23 @@ def get_spaces(list, tamanhos):
     return free
 
 
-# param --- the process to be allocated
+# param --- the process to be allocated and the
 # devolve um
-def quick_fit(procc, ua, proc_list):
+def quick_fit(mem_list, procc):
     aux = Memory(0, 0)
     i = 0
-    for l in proc_list:
-        if l != []:
-            if l[0].mem == procc.mem:
-                aux = l[0]
-                l.remove(aux)
+    for ll in mem_list:
+        if not ll == []:
+            if ll[0].mem == procc.mem:
+                aux = ll[0]
     # on this point, user knows in that list to pick the
-    # first avaible memory from
+    # first available memory from
     return aux
 
 
-# n estamos levando em conta a possubilidade de dar ruim na escolha de onde por os processos
-def into_memory (procc, option, list_memory):
+# params    ==> the process, the option, the virtual memory, and the list of spaces to be required
+# it does   ==> try to place the process on the virtual memory
+def into_memory (procc, option, list_memory, spaces_list):
     if option == Memory.BEST:
         best_local  = best_fit(list_memory, procc)
         if best_local.space == 0:
@@ -71,11 +71,11 @@ def into_memory (procc, option, list_memory):
         else:
             index = list_memory.index(best_local)
             if procc.mem < list_memory[index].space:
-                list_memory.insert(index, Memory(0, procc.mem, procc))
+                list_memory.insert(index, Memory(best_local.base, procc.mem, procc))
                 list_memory[index + 1].base += procc.mem
                 list_memory[index + 1].space -= procc.mem
             else:
-                list_memory[index].pr += procc
+                list_memory[index].pr = procc
     elif option == Memory.WORST:
         best_local  = worst_fit(list_memory, procc)
         if best_local.space == 0:
@@ -83,16 +83,49 @@ def into_memory (procc, option, list_memory):
         else:
             index = list_memory.index(best_local)
             if procc.mem < list_memory[index].space:
-                list_memory.insert(index, Memory(0, procc.mem, procc))
+                list_memory.insert(index, Memory(best_local.base, procc.mem, procc))
                 list_memory[index + 1].base += procc.mem
                 list_memory[index + 1].space -= procc.mem
             else:
-                list_memory[index].pr += procc
+                list_memory[index].pr = procc
     elif option == Memory.QUICK:
         # inserting an occupied memory into list_memory
-        pass
+        best_local  = quick_fit(get_spaces(list_memory, spaces_list), procc)
+        if best_local.space == 0:
+            print("Error: process can\'t be placed in virtual memory")
+        else:
+            # step 1 -- where to put it
+            index = 0
+            done = False
+            while list_memory[index + 1] != None and not done:
+                if list_memory[index].process:
+                    continue
+                elif list_memory[index].base == best_local.base:
+                    list_memory.insert(index, Memory(best_local.base, procc.mem, procc))
+                    list_memory[index + 1].base += procc.mem
+                    list_memory[index + 1].space -= procc.mem
+                    done = True
+                elif list_memory[index + 1] > best_local.base:
+                    done = True
+                    list_memory[index].space = best_local.base - list_memory[index].base
+                    list_memory.insert(index + 1, best_local)
+                    a_base = list_memory[index+1].base + list_memory[index + 1].space
+                    a_space = list_memory[index + 2] - a_base
+                    list_memory.insert(index + 2, Memory(a_base, a_space))
+            # staring at the last part of memory
+            if list_memory[index].base == best_local.base and not done:
+                if procc.mem < list_memory[index].space:
+                    list_memory.insert(index, Memory(best_local.base, procc.mem, procc))
+                    list_memory[index + 1].base += procc.mem
+                    list_memory[index + 1].space -= procc.mem
+                else:
+                    list_memory[index].pr = procc
+            elif list_memory[index].base < best_local.base and not done:
+                list_memory[index].space = best_local.base - list_memory[index].base
+                list_memory.append(best_local)
+
     else:
-        print("Error: into_memory invalid option")
+        print("Error -- into_memory: invalid option")
 
 def out_of_memory (proc):
     pass
@@ -110,3 +143,11 @@ def out_of_memory (proc):
 # [ [free, 0, 18], [free, 18, 6], [proc2, 24, 8] ]
 
 # [ [free, 0, 24], [proc2, 24, 8] ]
+
+# Exemplo3 (colocar um processo de 6 bits no espaco 19 -- n sei se isso aconteceria)
+
+# [ [proc0, 0, 7], [free, 7, 5], [proc1, 12, 6], [free, 18, 8], (place it here) [proc2, 26, 6] ]
+
+# [ [proc0, 0, 7], [free, 7, 5], [proc1, 12, 6], [free, 18, 8], [proc3, 19, 6], [proc2, 26, 6] ]
+#                                                   [index]      [index + 1]
+# [ [proc0, 0, 7], [free, 7, 5], [proc1, 12, 6], [free, 18, 1], [proc3, 19, 6], [free, 25, 1], [proc2, 26, 6] ]
