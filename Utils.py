@@ -35,12 +35,13 @@ def get_spaces(list, tamanhos):
     for t in tamanhos:
         aux = []
         for cell in list:
-            base = cell.base
-            maximo = base + cell.space
-            while base + t < maximo:
-                aux1 = Memory(base, t)
-                aux.append(aux1)
-                base += t
+            if not cell.process:
+                base = cell.base
+                maximo = base + cell.space
+                while base + t < maximo:
+                    aux1 = Memory(base, t)
+                    aux.append(aux1)
+                    base += t
         aux.sort()
         free.append(aux)
     print("get\_spaces: ended")
@@ -54,7 +55,7 @@ def quick_fit(mem_list, procc):
     i = 0
     for ll in mem_list:
         if not ll == []:
-            if ll[0].mem == procc.mem:
+            if ll[0].mem >= procc.mem:
                 aux = ll[0]
     # on this point, user knows in that list to pick the
     # first available memory from
@@ -127,8 +128,20 @@ def into_memory (procc, option, list_memory, spaces_list):
     else:
         print("Error -- into_memory: invalid option")
 
-def out_of_memory (proc):
-    pass
+def out_of_memory (proc,m_list):
+    i = 0
+    found = False
+    while m_list[i] and not found:
+        if m_list[i].process and m_list[i].process == proc:
+            found = True
+            m_list[i].process = None
+            if m_list[i + 1] and not m_list[i + 1].process:
+                m_list[i].space += m_list[i + 1].spaces
+                m_list.pop(i+1)
+            if m_list[i - 1] and not m_list[i - 1].process:
+                m_list[i - 1].space += m_list[i].spaces
+                m_list.pop(i)
+        i += 1
 
 # Inserir
 # [   [free, 0, 32]   ]
