@@ -16,8 +16,10 @@ def running (entrada, mmu, pages):
     agenda_louca = []
     # fim do programa
     fim = 0
-    mmu_option = mmu
-    page_option = pages
+    #lista de espacos requeridos para o quick fit
+    spaces = []
+    mmu_option = int(mmu)
+    page_option = int(pages)
 
     # PROCESSSA O ARQUIVO DE ENTRADA
     for c in content:
@@ -38,6 +40,10 @@ def running (entrada, mmu, pages):
                 fim = int(aux[0])
         else:
             aux = Process(aux[3], aux[0], aux[1], aux[2], aux[4:])
+            if aux.mem in spaces:
+                continue
+            else:
+                spaces.append(aux.mem)
             for ev in aux.acc:
                 agenda_louca.append(ev)
             agenda_louca.append(Events(Events.INSERT, aux.ti, aux))
@@ -59,7 +65,7 @@ def running (entrada, mmu, pages):
     while elapsed_time < fim:
         print("Instante " + str(elapsed_time + 1))
         for e in agenda_oficial[elapsed_time]:
-            make_it_happen(e, [mmu_option, page_option], mem_virtual, size[1])
+            make_it_happen(e, [mmu_option, page_option], mem_virtual, size[1], spaces)
         elapsed_time += 1
 
 def console ():

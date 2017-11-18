@@ -69,7 +69,7 @@ def quick_fit(mem_list, procc):
     i = 0
     for ll in mem_list:
         if not ll == []:
-            if ll[0].mem >= procc.mem:
+            if ll[0].space >= procc.mem:
                 aux = ll[0]
     # on this point, user knows in that list to pick the
     # first available memory from
@@ -115,6 +115,7 @@ def into_memory (procc, option, list_memory, spaces_list):
             done = False
             while index + 1 < tam and not done:
                 if list_memory[index].process:
+                    index += 1
                     continue
                 elif list_memory[index].base == best_local.base:
                     list_memory.insert(index, Memory(best_local.base, procc.mem, procc))
@@ -128,6 +129,7 @@ def into_memory (procc, option, list_memory, spaces_list):
                     a_base = list_memory[index+1].base + list_memory[index + 1].space
                     a_space = list_memory[index + 2] - a_base
                     list_memory.insert(index + 2, Memory(a_base, a_space))
+                index += 1
             # staring at the last part of memory
             if list_memory[index].base == best_local.base and not done:
                 if procc.mem < list_memory[index].space:
