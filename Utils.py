@@ -14,6 +14,7 @@ def compact (memory, m_list):
             aux = Memory(basis, mm.space, mm.process)
             basis += mm.space
             new_one.append(aux)
+    print(new_one)
     if new_one[-1].space + new_one[-1].base != memory:
         new_one.append(Memory(basis, memory - basis))
     return new_one
