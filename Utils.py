@@ -190,7 +190,7 @@ def make_it_happen (event, opp, memories, t_space, spaces_list = None):
         out_of_memory(event.proc, memories[1])
     elif event.kind == Events.COMPACT:
         print("\tCompacting Memory")
-        memories[1] = compact(t_space, memories[1])
+        compact(t_space, memories[1])
         compact_physical(memories[0])
     elif event.kind == Events.INSERT:
         print("\tInserting process " + event.proc.nome)
