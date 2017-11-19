@@ -19,6 +19,6 @@ class Memory:
 
     def __str__(self):
         if self.process is None:
-            return '- ( Free | %d %d ) -' % (self.base, self.space)
+            return '- [ Free | %d %d ] -' % (self.base, self.space)
         else:
-            return '- ( Proc: %s | %d %d ) -' % (self.process.nome, self.base, self.space)
+            return '- [ Proc: %s | %d %d ] -' % (self.process.nome, self.base, self.space)

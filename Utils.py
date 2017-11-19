@@ -26,7 +26,10 @@ def compact (memory, m_list):
             new_one.append(aux)
     if new_one[-1].space + new_one[-1].base != memory:
         new_one.append(Memory(basis, memory - basis))
-    return new_one
+    for i in range(len(m_list)):
+        m_list.pop(0)
+    for n in new_one:
+        m_list.append(n)
 
 def compact_physical (memory):
      i = 0
@@ -187,7 +190,7 @@ def make_it_happen (event, opp, memories, t_space, spaces_list = None):
         out_of_memory(event.proc, memories[1])
     elif event.kind == Events.COMPACT:
         print("\tCompacting Memory")
-        compact(t_space, memories[1])
+        memories[1] = compact(t_space, memories[1])
         compact_physical(memories[0])
     elif event.kind == Events.INSERT:
         print("\tInserting process " + event.proc.nome)

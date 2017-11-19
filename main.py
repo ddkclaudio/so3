@@ -68,10 +68,10 @@ def running (entry, mmu, pages, tempo = sys.maxsize):
         print("Instante " + str(elapsed_time + 1))
         for e in agenda_oficial[elapsed_time]:
             make_it_happen(e, [mmu_option, page_option], [mem_fisica, mem_virtual], size[1], spaces)
-        if (elapsed_time + 1) % tempo:
-            pass
+        if (elapsed_time + 1) % tempo == 0:
+            status(mem_fisica, mem_virtual)
         elapsed_time += 1
-    status(mem_fisica, mem_virtual)
+    #status(mem_fisica, mem_virtual)
 
 def console ():
     working = True
@@ -110,11 +110,13 @@ def console ():
 def status (p_mem, v_mem):
     for v in v_mem:
         print(v, end="")
+    print('')
     for p in p_mem:
-        print(p, end="", flush=False)
+        print(p, end="")
+    print('')
 
 if len(sys.argv) == 1:
     console()
 else:
-    running(sys.argv[1], sys.argv[2], sys.argv[3])
+    running(sys.argv[1], sys.argv[2], sys.argv[3], 3)
 

@@ -10,7 +10,7 @@ class P_pages:
 
     def __str__(self):
         if self.virtual is not None:
-            return '- (Proc: %s | %d %d ) -' % (self.virtual.process.nome, self.beg, self.end)
+            return '- ( Proc: %s | %d %d ) -' % (self.virtual.process.nome, self.beg, self.end)
         else:
             return '- ( Free | %d %d ) -' % (self.beg, self.end)
 
