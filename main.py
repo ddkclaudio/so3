@@ -79,7 +79,8 @@ def console ():
     entries = [[False, ""], [False, 0], [False, 0]]
     while working:
         cmd = input("[ep3]: ")
-        if cmd == "sai":
+        
+        if cmd == 'sai':
             working = False
         elif cmd[0:7] == 'carrega':
             entries[0][1] = cmd.split(" ")[1]
@@ -109,10 +110,10 @@ def console ():
 
 def status (p_mem, v_mem):
     for v in v_mem:
-        print(v, end="")
+        print(v)
     print('')
     for p in p_mem:
-        print(p, end="")
+        print(p)
     print('')
 
 if len(sys.argv) == 1:
