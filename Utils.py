@@ -1,6 +1,7 @@
 from MMU import *
-from Events import *
 from Pages import *
+from Events import *
+from PManagement import *
 
 def virtual_memory (qtd_memory):
     aux = Memory(0, qtd_memory)
@@ -196,7 +197,7 @@ def make_it_happen (event, opp, memories, t_space, spaces_list = None):
         print("\tInserting process " + event.proc.nome)
         into_memory(event.proc, opp[0], memories[1], spaces_list)
     elif event.kind == Events.ACCESS:
-        print("\tAccessing space " + event.acc.space + " on process " + event.acc.proc.nome)
+        access(event)
 
 
 # Inserir

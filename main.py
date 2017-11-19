@@ -1,7 +1,7 @@
-import sys
 import re
-# from MMU import *
+import sys
 from Proc import *
+# from MMU import *
 from Utils import *
 from Events import *
 
