@@ -1,13 +1,13 @@
 import sys
 import re
-from MMU import *
+# from MMU import *
 from Proc import *
 from Utils import *
 from Events import *
 
-def running (entrada, mmu, pages):
-    # LE O ARQUIVO DE ENTRADA
-    with open(entrada) as f:
+def running (entry, mmu, pages, tempo = sys.maxsize):
+    # READING ENTRY FILE
+    with open(entry) as f:
         content = f.readlines()
     content = [x.strip() for x in content]
 
@@ -29,10 +29,10 @@ def running (entrada, mmu, pages):
         if len(aux) == 4:
             size[0] = int(aux[0])
             size[1] = int(aux[1])
-            mem_fisic = lista_processos(size[0])
-            mem_virtual = lista_processos(size[1])
-            unit_aloc = aux[2]
-            size_page = aux[3]
+            unit_aloc = int(aux[2])
+            size_page = int(aux[3])
+            mem_fisica = physical_memory(size[0], size_page)
+            mem_virtual = virtual_memory(size[1])
         elif len(aux) == 2:
             # DEVEMOS COMPACTAR
             agenda_louca.append(Events(Events.COMPACT, aux[0], None, None))
@@ -40,6 +40,8 @@ def running (entrada, mmu, pages):
                 fim = int(aux[0])
         else:
             aux = Process(aux[3], aux[0], aux[1], aux[2], aux[4:])
+            aux.real_space(unit_aloc)
+            aux.get_pages(size_page)
             if aux.mem in spaces:
                 continue
             else:
@@ -65,8 +67,11 @@ def running (entrada, mmu, pages):
     while elapsed_time < fim:
         print("Instante " + str(elapsed_time + 1))
         for e in agenda_oficial[elapsed_time]:
-            make_it_happen(e, [mmu_option, page_option], mem_virtual, size[1], spaces)
+            make_it_happen(e, [mmu_option, page_option], [mem_fisica, mem_virtual], size[1], spaces)
+        if (elapsed_time + 1) % tempo:
+            pass
         elapsed_time += 1
+    status(mem_fisica, mem_virtual)
 
 def console ():
     working = True
@@ -76,7 +81,7 @@ def console ():
         cmd = input("[ep3]: ")
         if cmd == "sai":
             working = False
-        elif cmd[0:7] == 'cwarrega':
+        elif cmd[0:7] == 'carrega':
             entries[0][1] = cmd.split(" ")[1]
             if not entries[0][0]:
                 entries[0][0] = True
@@ -92,7 +97,7 @@ def console ():
                 entries[2][0] = True
                 var += 1
         elif cmd[0:7] == "executa":
-            #entries[2][1] = cmd.split(" ")[1]
+            #timing = cmd.split(" ")[1]
             if var == 3:
                 running(entries[0][1], entries[1][1], entries[2][1])
                 entries = [[False, ""], [False, 0], [False, 0]]
@@ -102,6 +107,11 @@ def console ():
             print("Invalid option")
             continue
 
+def status (p_mem, v_mem):
+    for v in v_mem:
+        print(v, end="")
+    for p in p_mem:
+        print(p, end="", flush=False)
 
 if len(sys.argv) == 1:
     console()

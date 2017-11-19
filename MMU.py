@@ -16,3 +16,9 @@ class Memory:
 
     def __lt__(self, other):
         return self.base < other.base
+
+    def __str__(self):
+        if self.process is None:
+            return '- ( Free | %d %d ) -' % (self.base, self.space)
+        else:
+            return '- ( Proc: %s | %d %d ) -' % (self.process.nome, self.base, self.space)

@@ -1,4 +1,5 @@
 from Events import *
+from Pages import *
 
 class Process:
     count = 0
@@ -11,6 +12,7 @@ class Process:
         self.tf = int(tf)
         self.mem = int(mem)
         self.acc = []
+        self.pp = []
         offset = 0
         size = len(acc)
         while offset < size:
@@ -20,3 +22,21 @@ class Process:
 
     def __lt__(self, other):
         return self.ti < other.ti
+
+    # takes the allocation unity
+    # returns the real space to be reserved to the space
+    def real_space (self, ua):
+        aux = int(self.mem/ua)
+        if aux*ua == self.mem:
+            return  aux
+        else:
+            return aux + 1
+
+
+    def get_pages (self, pages):
+        b = 0
+        e = pages - 1
+        while b < self.mem:
+            self.pp.append(V_pages(b, e, self))
+            b += pages
+            e += pages

@@ -1,10 +1,20 @@
 from MMU import *
 from Events import *
+from Pages import *
 
-# Base para Best/Worst Fit
-def lista_processos (qtd_memory):
+def virtual_memory (qtd_memory):
     aux = Memory(0, qtd_memory)
     return [aux]
+
+def physical_memory(qtd_memory, page_size):
+    p_mem = []
+    b = 0
+    e = page_size-1
+    while b < qtd_memory:
+        p_mem.append(P_pages(b, e))
+        b += page_size
+        e += page_size
+    return p_mem
 
 def compact (memory, m_list):
     new_one = []
@@ -14,10 +24,24 @@ def compact (memory, m_list):
             aux = Memory(basis, mm.space, mm.process)
             basis += mm.space
             new_one.append(aux)
-    print(new_one)
     if new_one[-1].space + new_one[-1].base != memory:
         new_one.append(Memory(basis, memory - basis))
     return new_one
+
+def compact_physical (memory):
+     i = 0
+     j = len(memory)-1
+     while i < j:
+         while memory[i].virtual is not None and i < j:
+             i += 1
+         while memory[j].virtual is None and i < j:
+             j -= 1
+         if i < j:
+             aux = memory[i].virtual
+             memory[i].virtual = memory[j].virtual
+             memory[j].virtual = aux
+             i += 1
+             j -= 1
 
 def best_fit(lista, procc):
     aux = Memory(0, 0)
@@ -44,7 +68,6 @@ def worst_fit(lista, procc):
 # @recebe uma lista com os tamanhos e a lista com as memorias
 # @devolve uma lista de listas com todos os espacos disponiveis
 def get_spaces(list, tamanhos):
-    print("get\_spaces: running")
     free = []
     for t in tamanhos:
         aux = []
@@ -58,9 +81,7 @@ def get_spaces(list, tamanhos):
                     base += t
         aux.sort()
         free.append(aux)
-    print("get\_spaces: ended")
     return free
-
 
 # param --- the process to be allocated and the
 # devolve um
@@ -74,7 +95,6 @@ def quick_fit(mem_list, procc):
     # on this point, user knows in that list to pick the
     # first available memory from
     return aux
-
 
 # params    ==> the process, the option, the virtual memory, and the list of spaces to be required
 # it does   ==> try to place the process on the virtual memory
@@ -161,20 +181,19 @@ def out_of_memory (proc,m_list):
                 m_list.pop(i)
         i += 1
 
-def make_it_happen (event, opp, memory, t_space, spaces_list = None):
+def make_it_happen (event, opp, memories, t_space, spaces_list = None):
     if event.kind == Events.DELETE:
         print("\tRemoving process " + event.proc.nome)
-        out_of_memory(event.proc, memory)
+        out_of_memory(event.proc, memories[1])
     elif event.kind == Events.COMPACT:
         print("\tCompacting Memory")
-        compact(t_space, memory)
+        compact(t_space, memories[1])
+        compact_physical(memories[0])
     elif event.kind == Events.INSERT:
         print("\tInserting process " + event.proc.nome)
-        into_memory(event.proc, opp[0], memory, spaces_list)
+        into_memory(event.proc, opp[0], memories[1], spaces_list)
     elif event.kind == Events.ACCESS:
         print("\tAccessing space " + event.acc.space + " on process " + event.acc.proc.nome)
-
-
 
 
 # Inserir

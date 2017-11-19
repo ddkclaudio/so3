@@ -1,20 +1,28 @@
-class F_pages:
+class P_pages:
     PAGESP = 0
 
     def __init__(self, beg, end, virtual=None):
         self.beg = beg
         self.end = end
         self.virtual = virtual
-        self.id = F_pages.PAGESP
-        F_pages.PAGESP += 1
+        self.id = P_pages.PAGESP
+        P_pages.PAGESP += 1
+
+    def __str__(self):
+        if self.virtual is not None:
+            return '- (Proc: %s | %d %d ) -' % (self.virtual.process.nome, self.beg, self.end)
+        else:
+            return '- ( Free | %d %d ) -' % (self.beg, self.end)
+
 
 
 class V_pages:
     PAGESV = 0
 
-    def __init__(self, beg, end, phisical = None):
+    def __init__(self, beg, end, process = None, physical = None):
         self.beg = beg
         self.end = end
-        self.phisical = phisical
+        self.process = process
+        self.physical = physical
         self.id = V_pages.PAGESV
         V_pages.PAGESV += 1
