@@ -4,8 +4,17 @@ from Proc import *
 # from MMU import *
 from Utils import *
 from Events import *
+import os.path
 
 def running (entry, mmu, pages, tempo = sys.maxsize):
+    # CRIANDO PASTAS E ARQUIVOS 
+    folder = 'tmp'
+    if not os.path.isdir(folder):
+        os.mkdir(folder)
+    
+    ep3_mem = open("%s/ep3.mem" %(folder),"wb")
+    ep3_vir = open("%s/ep3.vir" %(folder),"wb")
+    
     # READING ENTRY FILE
     with open(entry) as f:
         content = f.readlines()
@@ -35,6 +44,8 @@ def running (entry, mmu, pages, tempo = sys.maxsize):
             size_page = int(aux[3])
             mem_fisica = physical_memory(size[0], size_page)
             mem_virtual = virtual_memory(size[1])
+            P_pages.TAB_PAGES = get_matrix(int(size[0]/size_page))
+            print(P_pages.TAB_PAGES)
         elif len(aux) == 2:
             # DEVEMOS COMPACTAR
             agenda_louca.append(Events(Events.COMPACT, aux[0], None, None))
@@ -77,6 +88,19 @@ def running (entry, mmu, pages, tempo = sys.maxsize):
             make_it_happen(e, [mmu_option, page_option], [mem_fisica, mem_virtual], size[1], list_acc, spaces)
         if (elapsed_time + 1) % tempo == 0:
             status(mem_fisica, mem_virtual)
+            # GRAVAR EM DISCO TXT
+            
+            for v in mem_virtual:
+                # salvar no arquivo
+                pass
+            
+            
+            for v in mem_fisica:
+                # salvar no arquivo
+                pass
+            
+            
+            
         elapsed_time += 1
     #status(mem_fisica, mem_virtual)
 

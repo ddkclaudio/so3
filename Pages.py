@@ -1,5 +1,6 @@
 class P_pages:
     PAGESP = 0
+    TAB_PAGES = []
 
     def __init__(self, beg, end, virtual=None):
         self.beg = beg
