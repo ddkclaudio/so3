@@ -14,7 +14,8 @@ class P_pages:
         else:
             return '- ( Free | %d %d ) -' % (self.beg, self.end)
 
-
+    def is_free (self):
+        return self.virtual is None
 
 class V_pages:
     PAGESV = 0
@@ -26,3 +27,6 @@ class V_pages:
         self.physical = physical
         self.id = V_pages.PAGESV
         V_pages.PAGESV += 1
+        
+    def is_free (self):
+        return self.physical is None

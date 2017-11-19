@@ -184,8 +184,9 @@ def out_of_memory (proc,m_list):
                 m_list[i - 1].space += m_list[i].space
                 m_list.pop(i)
         i += 1
+    proc.sack_it()
 
-def make_it_happen (event, opp, memories, t_space, spaces_list = None):
+def make_it_happen (event, opp, memories, t_space, list_acc, spaces_list = None):
     if event.kind == Events.DELETE:
         print("\tRemoving process " + event.proc.nome)
         out_of_memory(event.proc, memories[1])
@@ -197,8 +198,8 @@ def make_it_happen (event, opp, memories, t_space, spaces_list = None):
         print("\tInserting process " + event.proc.nome)
         into_memory(event.proc, opp[0], memories[1], spaces_list)
     elif event.kind == Events.ACCESS:
-        #access(event)
-        print("\tAccessing space " + event.acc.space + " on process " + event.acc.proc.nome)
+        access(event, memories[0], list_acc, opp[1])
+        #print("\tAccessing space " + str(event.acc.space) + " on process " + event.acc.proc.nome)
 
 
 # Inserir

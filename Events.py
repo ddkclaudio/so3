@@ -15,6 +15,11 @@ class Events:
 
 class Access:
 
-    def __init__(self, proc, space):
+    def __init__(self, proc, space, evento = None):
         self.proc = proc
-        self.space = space
+        self.space = int(space)
+        self.page = None
+        self.evento = evento
+        
+    def __lt__ (self, other):
+        return self.evento.moment < other.evento.moment

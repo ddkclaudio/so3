@@ -18,6 +18,8 @@ def running (entry, mmu, pages, tempo = sys.maxsize):
     fim = 0
     #lista de espacos requeridos para o quick fit
     spaces = []
+    #lista de acessos
+    list_acc = []
     mmu_option = int(mmu)
     page_option = int(pages)
 
@@ -42,6 +44,7 @@ def running (entry, mmu, pages, tempo = sys.maxsize):
             aux = Process(aux[3], aux[0], aux[1], aux[2], aux[4:])
             aux.real_space(unit_aloc)
             aux.get_pages(size_page)
+            aux.translate()
             if aux.mem in spaces:
                 continue
             else:
@@ -59,15 +62,19 @@ def running (entry, mmu, pages, tempo = sys.maxsize):
 
     for event in agenda_louca:
         agenda_oficial[event.moment-1].append(event)
+        if event.kind == Events.ACCESS:
+            list_acc.append(event.acc)
     elapsed_time = 0
 
     for a in agenda_oficial:
         a.sort()
+        
+    list_acc.sort()
 
     while elapsed_time < fim:
         print("Instante " + str(elapsed_time + 1))
         for e in agenda_oficial[elapsed_time]:
-            make_it_happen(e, [mmu_option, page_option], [mem_fisica, mem_virtual], size[1], spaces)
+            make_it_happen(e, [mmu_option, page_option], [mem_fisica, mem_virtual], size[1], list_acc, spaces)
         if (elapsed_time + 1) % tempo == 0:
             status(mem_fisica, mem_virtual)
         elapsed_time += 1
@@ -119,5 +126,5 @@ def status (p_mem, v_mem):
 if len(sys.argv) == 1:
     console()
 else:
-    running(sys.argv[1], sys.argv[2], sys.argv[3], 3)
+    running(sys.argv[1], sys.argv[2], sys.argv[3], 2)
 

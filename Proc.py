@@ -17,8 +17,11 @@ class Process:
         size = len(acc)
         while offset < size:
             aux = Events(Events.ACCESS, acc[offset + 1], self, Access(self, acc[offset]))
+            aux.acc.evento = aux
+            
             self.acc.append(aux)
             offset += 2
+        
 
     def __lt__(self, other):
         return self.ti < other.ti
@@ -40,3 +43,25 @@ class Process:
             self.pp.append(V_pages(b, e, self))
             b += pages
             e += pages
+            
+    
+    def translate (self):
+        for a in self.acc:
+            aux = a.acc.space
+            for p in self.pp:
+                if p.beg <= aux and p.end >= aux:
+                    a.acc.page = p
+                    break
+        
+                
+    def sack_it (self):
+        for pages in self.pp:
+            if pages.physical is not None:
+                pages.physical.virtual = None
+                pages.physical = None
+            self.pp.remove(pages)
+                
+        
+                
+                
+                
