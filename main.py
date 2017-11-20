@@ -1,3 +1,5 @@
+from array import array
+
 import re
 import sys
 from Proc import *
@@ -12,8 +14,7 @@ def running (entry, mmu, pages, tempo = sys.maxsize):
     if not os.path.isdir(folder):
         os.mkdir(folder)
     
-    ep3_mem = open("%s/ep3.mem" %(folder),"wb")
-    ep3_vir = open("%s/ep3.vir" %(folder),"wb")
+   
     
     # READING ENTRY FILE
     with open(entry) as f:
@@ -46,6 +47,23 @@ def running (entry, mmu, pages, tempo = sys.maxsize):
             mem_virtual = virtual_memory(size[1])
             P_pages.TAB_PAGES = get_matrix(int(size[0]/size_page))
             print(P_pages.TAB_PAGES)
+            
+            # CRIA OS ARQUIVOS 
+            ep3_mem = open("%s/ep3.mem" %(folder),"wb")
+            ep3_vir = open("%s/ep3.vir" %(folder),"wb")
+            float_array = array('d', size)
+            float_array.tofile(ep3_vir)
+            float_array.tofile(ep3_mem)
+            
+            tmp = size[1] * [-1]
+            float_array = array('d', tmp)
+            float_array.tofile(ep3_vir)
+            
+            tmp = size[0] * [-1]
+            float_array = array('d', tmp)
+            float_array.tofile(ep3_mem)
+            
+            
         elif len(aux) == 2:
             # DEVEMOS COMPACTAR
             agenda_louca.append(Events(Events.COMPACT, aux[0], None, None))
@@ -88,21 +106,37 @@ def running (entry, mmu, pages, tempo = sys.maxsize):
             make_it_happen(e, [mmu_option, page_option], [mem_fisica, mem_virtual], size[1], list_acc, spaces)
         if (elapsed_time + 1) % tempo == 0:
             status(mem_fisica, mem_virtual)
-            # GRAVAR EM DISCO TXT
             
+            # GRAVAR .VIR
+            tmp = size[1] * [-1]
             for v in mem_virtual:
                 # salvar no arquivo
-                pass
+                if v.process is not None:
+                    for i in range(v.base,v.base + v.space):
+                        tmp[i] = v.process.id
             
+            float_array = array('d', tmp)
+            float_array.tofile(ep3_vir)
             
-            for v in mem_fisica:
+            # GRAVAR .MEM
+            tmp = size[0] * [-1]
+            for f in mem_fisica:
                 # salvar no arquivo
-                pass
+                if f.virtual is not None:
+                    for i in range(f.beg, f.end):
+                        tmp[i] = f.virtual.process.id
             
+            float_array = array('d', tmp)
+            float_array.tofile(ep3_mem)
+            
+            # LEITURA 
+            # input_file = open("%s/ep3.vir" %(folder),"rb")
+            # float_array = array('d')
+            # float_array.fromstring(input_file.read())
+            # print(float_array)
             
             
         elapsed_time += 1
-    #status(mem_fisica, mem_virtual)
 
 def console ():
     working = True
@@ -141,10 +175,12 @@ def console ():
 
 def status (p_mem, v_mem):
     for v in v_mem:
-        print(v)
+        print(v, end="")
+    print('')
     print('')
     for p in p_mem:
-        print(p)
+        print(p, end="")
+    print('')
     print('')
 
 if len(sys.argv) == 1:
